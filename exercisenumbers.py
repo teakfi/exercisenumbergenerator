@@ -3,7 +3,7 @@ import sys
 import argparse
 
 
-def calcvalues( min_value, max_value, how_many_values, only_odd, only_even, chosen_distribution ):
+def stepsize(only_odd, only_even, min_value):
     step=1
     if only_odd and only_even:
         sys.exit()
@@ -20,15 +20,51 @@ def calcvalues( min_value, max_value, how_many_values, only_odd, only_even, chos
                 
         step=2
 
+    return [step,min_value]
+
+def alldistribution(min_value,max_value,step):
+    values=list(range(min_value,max_value+1,step))
+    return values
+
+def flatdistribution(min_value,max_value,step,how_many_values):
+    count=0
+    values=[]
+    while count < how_many_values:
+        number=random.randrange(min_value,max_value,step)
+        if not number in values:
+            values.append(number)
+            count=count+1
+        
+    return values
+
+def gaussiandistribution(min_value,max_value,only_odd,only_even,mean,sigma,how_many_values):
+    count=0
+    values=[]
+    while count < how_many_values:
+        number=int(random.gauss(mean,sigma))
+        if only_odd and not number%2:
+            continue
+        
+        if only_even and  number%2:
+            continue
+        
+        if number>=min_value and number<=max_value and not number in values:
+            values.append(number)
+            count=count+1
+
+    return values
+
+def calcvalues( min_value, max_value, how_many_values, only_odd, only_even, chosen_distribution ):
+
+    [step,min_value]=stepsize(only_odd,only_even,min_value)
+    
     if how_many_values>(max_value-min_value)/step:
-        values=range(min_value,max_value,step)
-        print(values)
-        sys.exit()
+        chosen_distribution=4
     
     values = []
 
 
-    distributions=['flat','central gauss','low gauss','high gauss']
+    distributions=['flat','central gauss','low gauss','high gauss','all']
     if not chosen_distribution < len(distributions):
         sys.exit()
     if chosen_distribution < 0:
@@ -39,13 +75,10 @@ def calcvalues( min_value, max_value, how_many_values, only_odd, only_even, chos
     random.seed()
     count = 0
     if chosen == 'flat':
-        while count < how_many_values:
-            number=random.randrange(min_value,max_value,step)
-            if not number in values:
-                values.append(number)
-                count=count+1
-
-            
+        values=flatdistribution(min_value,max_value,step,how_many_values)
+    elif chosen == 'all':
+        values=alldistribution(min_value,max_value,step)
+        
     else:
         sigma=(min_value+max_value)/4
         if chosen =='central gauss':
@@ -54,19 +87,7 @@ def calcvalues( min_value, max_value, how_many_values, only_odd, only_even, chos
             mean=min_value
         elif chosen=='high gauss':
             mean=max_value
-
-        while count < how_many_values:
-            number=int(random.gauss(mean,sigma))
-            if only_odd and not number%2:
-                continue
-
-            if only_even and  number%2:
-                continue
-        
-            if number>=min_value and number<=max_value and not number in values:
-                values.append(number)
-                count=count+1
-
+        values=gaussiandistribution(min_value,max_value,only_odd,only_even,mean,sigma,how_many_values)
             
     values.sort()
     print(values)
