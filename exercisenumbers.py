@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import random
 import sys
 import argparse
@@ -118,32 +120,31 @@ class RndGeneratorFactory(object):
 			RndGeneratorFactory.HighGaussRndDistribution.ArgumentListing() \
 			]
 
+            
 
-def Calculate( min_value, max_value, how_many_values, only_odd, only_even, chosen):
+class TextUI():
+	def Calculate(self,min_value, max_value, how_many_values, only_odd, only_even, chosen):
 
-	oddness='none'
-	if only_odd:
-		oddness='odd'
-	if only_even:
-		oddness='even'	
-		
-	
-	number_of_poss_values=(max_value-min_value)
-	if oddness!='none':
-		number_of_poss_values=number_of_poss_values/2
-	
-	if how_many_values>=number_of_poss_values:
-		chosen='all'
+		oddness='none'
+		if only_odd:
+			oddness='odd'
+		if only_even:
+			oddness='even'	
+
+		number_of_poss_values=(max_value-min_value)
+		if oddness!='none':
+			number_of_poss_values=number_of_poss_values/2
+
+		if how_many_values>=number_of_poss_values:
+			chosen='all'
 
 
 
-	RndGenerator=RndGeneratorFactory.Factory(chosen)
-	
-	values=RndGenerator.CalcValues(min_value,max_value,oddness,how_many_values)
-			
-	values.sort()
-	print(values)
-	return;
+		RndGenerator=RndGeneratorFactory.Factory(chosen)
+		values=RndGenerator.CalcValues(min_value,max_value,oddness,how_many_values)
+		values.sort()
+		print(values)
+		return;
 
 
 def main():
@@ -174,8 +175,8 @@ def main():
 			chosen_dist=dists[1]
 			break
 				
-	
-	Calculate(args.minv,args.maxv,args.number, args.odd, args.even, chosen_dist)
+	UI=TextUI()
+	UI.Calculate(args.minv,args.maxv,args.number, args.odd, args.even, chosen_dist)
 	
 
 	return 0
